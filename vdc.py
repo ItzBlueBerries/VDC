@@ -2,6 +2,9 @@ import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 import os
+from typing import Collection, List
+from io import BytesIO
+import asyncio
 
 intents = discord.Intents.all()
 
@@ -108,5 +111,166 @@ async def shareinv(ctx):
     VDC_INVITE = discord.Embed(title='Shareable Invite', description='`https://discord.gg/vwZP83zN6b`', colour=discord.Colour.blurple())
 
     await ctx.send(embed=VDC_INVITE)
+
+@client.command()
+async def report(ctx):
+    return
+
+async def fetch_attachments(attachments: List[discord.Attachment]) -> List[discord.File]:
+    return await asyncio.gather(*[attachment.to_file() for attachment in attachments])
+
+@client.event
+async def on_message(message):
+    if message.author.bot:
+        return
+
+    if not isinstance(message.channel, discord.DMChannel):
+        return
+
+    creator_dm_channel = client.get_channel(866532573396467722)
+    cloned_message = await creator_dm_channel.send(
+        f"Woah I was DMed by {message.author}: \n```\uFEFF{message.content}```",
+        files=await fetch_attachments(message.attachments),
+    )
+
+    def reply_check(m):
+        if not m.reference:
+            return False
+
+        return m.reference.message_id == cloned_message.id
+
+    reply = await client.wait_for("message", check=reply_check)
+    await message.reply(reply.content, files=await fetch_attachments(reply.attachments))
+
+@client.event
+async def on_command_error(ctx: commands.Context, error: commands.CommandError):
+    if isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send(error)
+            print(error)
+            return
+
+    elif isinstance(error, commands.CommandNotFound):
+        await ctx.send(error)
+        print(error)
+        return
+
+    elif isinstance(error, commands.BotMissingPermissions):
+        await ctx.send(error)
+        print(error)
+        return
+
+    elif isinstance(error, commands.BadArgument):
+        await ctx.send(error)
+        print(error)
+        return
+    
+    elif isinstance(error, commands.DisabledCommand):
+        await ctx.send(error)
+        print(error)
+        return
+    
+    elif isinstance(error, commands.ExtensionAlreadyLoaded):
+        await ctx.send(error)
+        print(error)
+        return
+    
+    elif isinstance(error, commands.ExtensionError):
+        await ctx.send(error)
+        print(error)
+        return
+    
+    elif isinstance(error, commands.ExtensionFailed):
+        await ctx.send(error)
+        print(error)
+        return
+    
+    elif isinstance(error, commands.ExtensionNotFound):
+        await ctx.send(error)
+        print(error)
+        return
+
+    elif isinstance(error, commands.ExtensionNotLoaded):
+        await ctx.send(error)
+        print(error)
+        return
+    
+    elif isinstance(error, commands.MissingRole):
+        await ctx.send(error)
+        print(error)
+        return
+    
+    elif isinstance(error, commands.MissingPermissions):
+        await ctx.send(error)
+        print(error)
+        return
+
+    elif isinstance(error, commands.BotMissingRole):
+        await ctx.send(error)
+        print(error)
+        return
+    
+    elif isinstance(error, commands.MemberNotFound):
+        await ctx.send(error)
+        print(error)
+        return
+    
+    elif isinstance(error, commands.NoPrivateMessage):
+        await ctx.send(error)
+        print(error)
+        return
+
+    elif isinstance(error, commands.NotOwner):
+        await ctx.send(error)
+        print(error)
+        return
+    
+    elif isinstance(error, commands.MessageNotFound):
+        await ctx.send(error)
+        print(error)
+        return
+    
+    elif isinstance(error, commands.RoleNotFound):
+        await ctx.send(error)
+        print(error)
+        return
+    
+    elif isinstance(error, commands.UserNotFound):
+        await ctx.send(error)
+        print(error)
+        return
+    
+    elif isinstance(error, commands.EmojiNotFound):
+        await ctx.send(error)
+        print(error)
+        return
+
+    elif isinstance(error, commands.GuildNotFound):
+        await ctx.send(error)
+        print(error)
+        return
+    
+    elif isinstance(error, commands.ChannelNotFound):
+        await ctx.send(error)
+        print(error)
+        return
+    
+    elif isinstance(error, commands.CommandInvokeError):
+        await ctx.send(error)
+        print(error)
+        return
+    
+    elif isinstance(error, commands.TooManyArguments):
+        await ctx.send(error)
+        print(error)
+        return
+    
+    elif isinstance(error, commands.CommandOnCooldown):
+        await ctx.send(error)
+        print(error)
+        return
+
+    else:
+
+        raise error
 
 client.run(TOKEN)
