@@ -14,8 +14,8 @@ client = commands.Bot(command_prefix=PREFIX, intents=intents)
 
 @client.event
 async def on_ready():
-    guild = client.get_guild(865936964439638042)
-    member_count = guild.members
+    # guild = client.get_guild(865936964439638042)
+    # member_count = guild.members
     activity = discord.Game(name='Server bot for Visual Discord Code. 😎 | .help')
     await client.change_presence(activity=activity)
     print(f'{client.user} is Online.')
